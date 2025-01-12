@@ -3,6 +3,7 @@ import csv
 import random
 import time
 import os
+from datetime import datetime  # Import datetime module
 
 # === PARAMETERS (Set these values directly) ===
 ADDITION_FIRST_RANGE = (2, 100)        # Range for the first number in addition
@@ -56,8 +57,10 @@ def save_results(results):
     with open(results_csv, mode="a", newline="") as file:
         writer = csv.writer(file)
         if not file_exists:
-            writer.writerow(["Question", "Time Spent (s)", "Type"])
-        writer.writerows(results)
+            writer.writerow(["question", "time", "type", "datetime"])
+        for result in results:
+            writer.writerow(
+                result + [datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
 
 
 def save_summary(total_correct):
@@ -66,9 +69,10 @@ def save_summary(total_correct):
     with open(summary_csv, mode="a", newline="") as file:
         writer = csv.writer(file)
         if not file_exists:
-            writer.writerow(["Total Score", "Addition First Range", "Addition Second Range",
-                             "Multiplication First Range", "Multiplication Second Range", "Duration (s)"])
+            writer.writerow(["datetime", "score", "addition_first_range", "addition_second_range", "multiplication_first_range", "multiplication_first_range", "duration"
+                             ])
         writer.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Record current date and time
             total_correct,
             ADDITION_FIRST_RANGE,
             ADDITION_SECOND_RANGE,
@@ -185,9 +189,28 @@ class MathGameApp:
             "Arial", 16), command=self.reset_game).pack(pady=20)
 
     def reset_game(self):
-        for widget in self.main_frame.winfo_children():
-            widget.destroy()
-        self.__init__(self.root)
+        self.main_frame.destroy()  # Properly remove the existing frame
+        self.main_frame = tk.Frame(self.root)
+        self.main_frame.pack()
+
+        self.question_label = tk.Label(
+            self.main_frame, text="Press Start to Begin!", font=("Arial", 20))
+        self.question_label.pack(pady=20)
+
+        self.input_var = tk.StringVar()
+        self.input_var.trace("w", self.check_answer)
+
+        self.entry = tk.Entry(self.main_frame, font=(
+            "Arial", 20), textvariable=self.input_var)
+        self.entry.pack(pady=10)
+
+        self.timer_label = tk.Label(
+            self.main_frame, text=f"Time Left: {DURATION} seconds", font=("Arial", 14))
+        self.timer_label.pack(pady=10)
+
+        self.start_button = tk.Button(self.main_frame, text="Start", font=(
+            "Arial", 16), command=self.start_game)
+        self.start_button.pack(pady=10)
 
 
 # === MAIN PROGRAM ===
