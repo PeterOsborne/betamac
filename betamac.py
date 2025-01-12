@@ -51,7 +51,6 @@ def generate_question(question_type):
 
 
 def save_results(results):
-    # Ensure the directory for the CSV files exists
     os.makedirs(os.path.dirname(results_csv), exist_ok=True)
     file_exists = os.path.isfile(results_csv)
     with open(results_csv, mode="a", newline="") as file:
@@ -62,7 +61,6 @@ def save_results(results):
 
 
 def save_summary(total_correct):
-    # Save the parameters and total score to the summary file
     os.makedirs(os.path.dirname(summary_csv), exist_ok=True)
     file_exists = os.path.isfile(summary_csv)
     with open(summary_csv, mode="a", newline="") as file:
@@ -79,12 +77,16 @@ def save_summary(total_correct):
             DURATION
         ])
 
-
 # === MATH GAME CLASS ===
+
+
 class MathGameApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Math Game")
+
+        # Center the window
+        self.center_window(600, 400)
 
         self.start_time = None
         self.elapsed_time = 0
@@ -115,6 +117,14 @@ class MathGameApp:
         self.current_question = None
         self.correct_answer = None
         self.question_type = None
+
+    def center_window(self, width, height):
+        """Centers the Tkinter window on the screen."""
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+        self.root.geometry(f"{width}x{height}+{x}+{y}")
 
     def start_game(self):
         self.start_time = time.time()
@@ -164,11 +174,9 @@ class MathGameApp:
         self.display_end_screen(total_correct)
 
     def display_end_screen(self, total_correct):
-        # Clear the main frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
-        # Display the score and a button to restart
         tk.Label(self.main_frame, text=f"Game Over!",
                  font=("Arial", 24)).pack(pady=20)
         tk.Label(self.main_frame, text=f"You answered {total_correct} questions correctly.", font=(
@@ -177,11 +185,8 @@ class MathGameApp:
             "Arial", 16), command=self.reset_game).pack(pady=20)
 
     def reset_game(self):
-        # Clear the main frame and reset the game
         for widget in self.main_frame.winfo_children():
             widget.destroy()
-
-        # Recreate the main screen
         self.__init__(self.root)
 
 
